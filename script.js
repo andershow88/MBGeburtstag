@@ -24,12 +24,12 @@
 
     setTimeout(function () {
       overlay.classList.add("split");
-    }, 3200);
+    }, 5200);
 
     setTimeout(function () {
       overlay.classList.add("done");
       launchFloatingElements();
-    }, 4600);
+    }, 7200);
   }
 
   // --- Particle background ---
