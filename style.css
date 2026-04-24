@@ -83,7 +83,7 @@ body {
 }
 
 .intro-emoji {
-  font-size: clamp(80px, 20vw, 140px);
+  font-size: clamp(120px, 30vw, 220px);
   display: inline-block;
 }
 
