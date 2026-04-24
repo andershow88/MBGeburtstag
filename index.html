@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alles Gute zum Geburtstag!</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <canvas id="particles-canvas"></canvas>
+
+  <div class="floating-elements"></div>
+
+  <canvas class="confetti-canvas"></canvas>
+
+  <header class="header">
+    <img src="merkur-logo.svg" alt="Merkur Privatbank">
+  </header>
+
+  <main class="main-container">
+    <div class="birthday-card">
+      <div class="cake-emoji">&#127874;</div>
+      <h1 class="birthday-title">
+        Alles Gute zum Geburtstag,
+        <span class="name" id="bday-name"></span>!
+      </h1>
+      <p class="birthday-subtitle">
+        Heute ist dein Tag! Ich w&uuml;nsche dir von ganzem Herzen
+        viel Freude, Gesundheit, Liebe, Lachen und unvergessliche Momente.
+        M&ouml;gen all deine W&uuml;nsche in Erf&uuml;llung gehen &ndash;
+        lass dich feiern!
+      </p>
+      <button class="surprise-btn" onclick="startSurprise()">
+        <span class="btn-shine"></span>
+        &#127881; &Uuml;berraschung starten
+      </button>
+    </div>
+  </main>
+
+  <section class="link-generator">
+    <div class="link-generator-card">
+      <h2 class="link-generator-title">&#128279; Link personalisieren</h2>
+      <div class="input-group">
+        <input type="text" id="name-input" placeholder="Name eingeben&hellip;"
+               onkeydown="if(event.key==='Enter')generateLink()">
+        <button class="btn-generate" onclick="generateLink()">Erstellen</button>
+      </div>
+      <div class="link-output" id="link-output"></div>
+      <button class="btn-copy" id="btn-copy" onclick="copyLink()">Link kopieren</button>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <p>Mit herzlichen Gr&uuml;&szlig;en von der Merkur Privatbank</p>
+    <img src="merkur-logo.svg" alt="Merkur Privatbank">
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
