@@ -1,8 +1,8 @@
 (function () {
-  const params = new URLSearchParams(window.location.search);
-  const rawName = params.get("name");
-  const name = rawName ? decodeURIComponent(rawName) : null;
-  const displayName = name || "du wundervoller Mensch";
+  var params = new URLSearchParams(window.location.search);
+  var rawName = params.get("name");
+  var name = rawName ? decodeURIComponent(rawName) : null;
+  var displayName = name || "du wundervoller Mensch";
 
   document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("bday-name").textContent = displayName;
@@ -11,12 +11,26 @@
       : "Alles Gute zum Geburtstag!";
 
     initParticles();
-    launchFloatingElements();
+    runIntroSequence();
+  });
+
+  // --- Intro: Cake + Beer crack open ---
+  function runIntroSequence() {
+    var overlay = document.getElementById("intro-overlay");
 
     setTimeout(function () {
-      document.querySelector(".loading-overlay").classList.add("hidden");
-    }, 400);
-  });
+      overlay.classList.add("cracking");
+    }, 2600);
+
+    setTimeout(function () {
+      overlay.classList.add("split");
+    }, 3200);
+
+    setTimeout(function () {
+      overlay.classList.add("done");
+      launchFloatingElements();
+    }, 4600);
+  }
 
   // --- Particle background ---
   function initParticles() {
@@ -40,10 +54,7 @@
         vy: (Math.random() - 0.5) * 0.3,
         r: Math.random() * 2 + 0.5,
         alpha: Math.random() * 0.4 + 0.1,
-        color:
-          Math.random() > 0.7
-            ? "197, 164, 109"
-            : "255, 255, 255",
+        color: Math.random() > 0.7 ? "197, 164, 109" : "255, 255, 255",
       });
     }
 
@@ -85,11 +96,11 @@
     draw();
   }
 
-  // --- Floating emoji elements on page load ---
+  // --- Floating emoji elements ---
   function launchFloatingElements() {
     var emojis = [
       "\u{1F388}","\u{2B50}","\u{1F381}","\u{1F389}","\u{1F382}",
-      "\u{2728}","\u{1F496}","\u{1F38A}","\u{1F31F}","\u{1F386}"
+      "\u{2728}","\u{1F496}","\u{1F38A}","\u{1F31F}","\u{1F386}",
     ];
     var container = document.querySelector(".floating-elements");
 
@@ -112,7 +123,31 @@
     }
   }
 
-  // --- Confetti ---
+  // --- Falling Merkur logos ---
+  function launchFallingLogos() {
+    for (var i = 0; i < 15; i++) {
+      (function (index) {
+        setTimeout(function () {
+          var img = document.createElement("img");
+          img.src = "merkur-logo.svg";
+          img.className = "falling-logo";
+          var size = Math.random() * 40 + 25;
+          img.style.width = size + "px";
+          img.style.left = Math.random() * 95 + "%";
+          img.style.top = "-60px";
+          img.style.setProperty("--logo-rot", (Math.random() * 1080 + 360) + "deg");
+          img.style.animationDuration = Math.random() * 3 + 3 + "s";
+          img.style.opacity = "0";
+          document.body.appendChild(img);
+          img.addEventListener("animationend", function () {
+            img.remove();
+          });
+        }, index * 250);
+      })(i);
+    }
+  }
+
+  // --- Confetti + logos ---
   window.startSurprise = function () {
     var canvas = document.querySelector(".confetti-canvas");
     var ctx = canvas.getContext("2d");
@@ -172,6 +207,7 @@
     draw();
 
     launchFloatingElements();
+    launchFallingLogos();
   };
 
   // --- Link generator ---
