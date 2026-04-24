@@ -54,7 +54,7 @@
         vy: (Math.random() - 0.5) * 0.3,
         r: Math.random() * 2 + 0.5,
         alpha: Math.random() * 0.4 + 0.1,
-        color: Math.random() > 0.7 ? "197, 164, 109" : "255, 255, 255",
+        color: Math.random() > 0.85 ? "168, 57, 107" : Math.random() > 0.6 ? "197, 164, 109" : "255, 255, 255",
       });
     }
 
@@ -157,7 +157,7 @@
     var confetti = [];
     var colors = [
       "#c5a46d","#d4bb8a","#ffffff","#f5c542",
-      "#e8a87c","#41b3a3","#e27d60","#85cdca",
+      "#e8a87c","#41b3a3","#e27d60","#85cdca","#a8396b","#c4548a",
     ];
 
     for (var i = 0; i < 200; i++) {
