@@ -185,10 +185,20 @@ body {
   font-size: clamp(0.95rem, 2.5vw, 1.15rem);
   color: rgba(255, 255, 255, 0.7);
   line-height: 1.7;
-  margin: 24px 0 32px;
+  margin: 24px 0 16px;
   opacity: 0;
   transform: translateY(20px);
   animation: textReveal 0.8s ease 1.8s forwards;
+}
+
+.birthday-greeting {
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  color: var(--accent-light);
+  font-style: italic;
+  margin-bottom: 32px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: textReveal 0.8s ease 2s forwards;
 }
 
 @keyframes textReveal {
