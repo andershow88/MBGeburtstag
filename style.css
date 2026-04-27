@@ -562,6 +562,112 @@ body {
   letter-spacing: 1.5px;
 }
 
+/* ─── Generator-Modal: erscheint vor der Seite, wenn kein Name in URL ─── */
+.generator-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+  background: linear-gradient(135deg, var(--bg-start), var(--bg-end), #1a1230, #0d1525);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  overflow-y: auto;
+  animation: modalBgFade 0.4s ease;
+}
+.generator-modal.hidden { display: none; }
+@keyframes modalBgFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.generator-modal-card {
+  max-width: 620px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(197, 164, 109, 0.28);
+  border-radius: 24px;
+  padding: 36px 32px 28px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.45), 0 0 60px rgba(168, 57, 107, 0.06);
+  animation: modalCardSlideUp 0.55s cubic-bezier(0.16, 0.88, 0.32, 1);
+}
+@keyframes modalCardSlideUp {
+  from { opacity: 0; transform: translateY(30px) scale(0.96); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.generator-modal-header { text-align: center; margin-bottom: 26px; }
+.generator-modal-emoji {
+  display: inline-block;
+  font-size: 3rem;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 4px 14px rgba(197, 164, 109, 0.45));
+}
+.generator-modal-title {
+  font-size: clamp(1.4rem, 3.2vw, 1.85rem);
+  color: var(--accent);
+  margin-bottom: 8px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+.generator-modal-subtitle {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 0.95rem;
+  line-height: 1.55;
+  max-width: 440px;
+  margin: 0 auto;
+}
+.generator-modal-footer {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+}
+.btn-preview {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 9px 20px;
+  border-radius: 10px;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+.btn-preview:hover {
+  color: var(--accent);
+  border-color: rgba(197, 164, 109, 0.4);
+}
+body.modal-active { overflow: hidden; }
+
+/* Floating Action Button: Modal wieder öffnen, wenn Name in URL aktiv */
+.fab-create {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: var(--primary);
+  border: none;
+  border-radius: 999px;
+  padding: 13px 22px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(197, 164, 109, 0.4);
+  z-index: 200;
+  transition: all 0.25s;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.fab-create.visible { display: inline-flex; }
+.fab-create:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(197, 164, 109, 0.55);
+}
+
 /* Du/Sie-Toggle */
 .form-toggle {
   display: flex;
@@ -602,6 +708,9 @@ body {
   to { opacity: 1; transform: translateY(0); }
 }
 
+.input-group-sie {
+  flex-wrap: wrap;
+}
 .input-group-sie .anrede-select {
   padding: 14px 14px;
   background: rgba(255, 255, 255, 0.06);
@@ -611,7 +720,7 @@ body {
   font-size: 0.95rem;
   outline: none;
   cursor: pointer;
-  min-width: 90px;
+  flex: 0 0 110px;
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -620,6 +729,13 @@ body {
   background-position: right 12px center;
   background-size: 12px;
   padding-right: 36px;
+}
+.input-group-sie input[type=text] {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.input-group-sie .btn-generate {
+  flex: 0 0 auto;
 }
 .input-group-sie .anrede-select:focus { border-color: var(--accent); }
 .input-group-sie .anrede-select option { background: var(--bg-end); color: var(--text-light); }

@@ -6,6 +6,30 @@
   var name = rawName ? decodeURIComponent(rawName) : null;
   var anrede = rawAnrede === "Frau" ? "Frau" : "Herr";
 
+  var birthdayStarted = false;
+  function startBirthdayView() {
+    if (birthdayStarted) return;
+    birthdayStarted = true;
+    initParticles();
+    runIntroSequence();
+    var fab = document.getElementById("fab-create");
+    if (fab) fab.classList.add("visible");
+  }
+
+  window.closeGeneratorModal = function () {
+    var modal = document.getElementById("generator-modal");
+    if (modal) modal.classList.add("hidden");
+    document.body.classList.remove("modal-active");
+    startBirthdayView();
+  };
+
+  window.reopenGeneratorModal = function () {
+    var modal = document.getElementById("generator-modal");
+    if (!modal) return;
+    document.body.classList.add("modal-active");
+    modal.classList.remove("hidden");
+  };
+
   document.addEventListener("DOMContentLoaded", function () {
     if (form === "sie" && name) {
       // Sie-Form
@@ -22,17 +46,21 @@
         greetingEl.innerHTML = "Schöne Grüße,<br>Anderson Büttenbender";
       }
       document.title = "Alles Gute, " + anrede + " " + name + "!";
+      startBirthdayView();
+    } else if (name) {
+      // Du-Form mit Namen
+      document.getElementById("bday-name").textContent = name;
+      document.title = "Alles Gute, " + name + "!";
+      startBirthdayView();
     } else {
-      // Du-Form (Default)
-      var displayName = name || "du wundervoller Mensch";
-      document.getElementById("bday-name").textContent = displayName;
-      document.title = name
-        ? "Alles Gute, " + name + "!"
-        : "Alles Gute zum Geburtstag!";
+      // Kein Name in der URL → Modal als erste Ansicht zeigen
+      document.getElementById("bday-name").textContent = "du wundervoller Mensch";
+      document.title = "Geburtstagslink erstellen";
+      document.body.classList.add("modal-active");
+      var modal = document.getElementById("generator-modal");
+      if (modal) modal.classList.remove("hidden");
     }
 
-    initParticles();
-    runIntroSequence();
     initFormToggle();
   });
 

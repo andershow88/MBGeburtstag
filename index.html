@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alles Gute zum Geburtstag!</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
 
@@ -61,9 +61,16 @@
     </div>
   </main>
 
-  <section class="link-generator">
-    <div class="link-generator-card">
-      <h2 class="link-generator-title">&#128279; Link personalisieren</h2>
+  <!-- Link-Generator als Modal-Overlay (zeigt sich beim Aufruf, sofern kein Name in der URL ist) -->
+  <div class="generator-modal" id="generator-modal">
+    <div class="generator-modal-card">
+      <div class="generator-modal-header">
+        <span class="generator-modal-emoji">&#127874;</span>
+        <h1 class="generator-modal-title">Geburtstagslink erstellen</h1>
+        <p class="generator-modal-subtitle">
+          W&auml;hle Du- oder Sie-Form, trag den Namen ein und kopiere deinen personalisierten Link.
+        </p>
+      </div>
 
       <div class="form-toggle" role="tablist">
         <button type="button" class="form-toggle-btn active" data-form="du">
@@ -96,14 +103,25 @@
 
       <div class="link-output" id="link-output"></div>
       <button class="btn-copy" id="btn-copy" onclick="copyLink()">Link kopieren</button>
+
+      <div class="generator-modal-footer">
+        <button type="button" class="btn-preview" onclick="closeGeneratorModal()">
+          Seite ohne Namen anschauen &rarr;
+        </button>
+      </div>
     </div>
-  </section>
+  </div>
+
+  <!-- Floating Action Button: Modal wieder &ouml;ffnen (sichtbar wenn ein Name aktiv ist) -->
+  <button type="button" class="fab-create" id="fab-create" onclick="reopenGeneratorModal()" title="Neuen Link erstellen">
+    <span style="font-size:1.05rem;">&#128279;</span> Neuen Link
+  </button>
 
   <footer class="footer">
     <p>Mit herzlichen Gr&uuml;&szlig;en von der Merkur Privatbank</p>
     <img src="merkur-logo.svg" alt="Merkur Privatbank">
   </footer>
 
-  <script src="script.js?v=2"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>
