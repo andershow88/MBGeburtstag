@@ -61,8 +61,6 @@
     birthdayStarted = true;
     initParticles();
     runIntroSequence();
-    var fab = document.getElementById("fab-create");
-    if (fab) fab.classList.add("visible");
   }
 
   window.closeGeneratorModal = function () {
