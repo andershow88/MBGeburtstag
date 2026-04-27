@@ -562,6 +562,68 @@ body {
   letter-spacing: 1.5px;
 }
 
+/* Du/Sie-Toggle */
+.form-toggle {
+  display: flex;
+  gap: 4px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(197, 164, 109, 0.18);
+  border-radius: 14px;
+  padding: 4px;
+  margin-bottom: 18px;
+}
+.form-toggle-btn {
+  flex: 1;
+  padding: 10px 16px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  font-size: 0.92rem;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.25s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.form-toggle-btn:hover { color: var(--accent-light); }
+.form-toggle-btn.active {
+  background: linear-gradient(135deg, var(--accent), var(--accent-light));
+  color: var(--primary);
+  box-shadow: 0 2px 10px rgba(197, 164, 109, 0.3), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.form-toggle-icon { font-size: 1rem; }
+
+.form-fields { animation: formFadeIn 0.25s ease; }
+@keyframes formFadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.input-group-sie .anrede-select {
+  padding: 14px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: var(--text-light);
+  font-size: 0.95rem;
+  outline: none;
+  cursor: pointer;
+  min-width: 90px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23c5a46d'%3E%3Cpath d='M3.204 5l4.796 4.796L12.796 5H3.204z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+  padding-right: 36px;
+}
+.input-group-sie .anrede-select:focus { border-color: var(--accent); }
+.input-group-sie .anrede-select option { background: var(--bg-end); color: var(--text-light); }
+
 .input-group {
   display: flex;
   gap: 10px;

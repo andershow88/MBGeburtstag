@@ -64,11 +64,36 @@
   <section class="link-generator">
     <div class="link-generator-card">
       <h2 class="link-generator-title">&#128279; Link personalisieren</h2>
-      <div class="input-group">
-        <input type="text" id="name-input" placeholder="Name eingeben&hellip;"
-               onkeydown="if(event.key==='Enter')generateLink()">
-        <button class="btn-generate" onclick="generateLink()">Erstellen</button>
+
+      <div class="form-toggle" role="tablist">
+        <button type="button" class="form-toggle-btn active" data-form="du">
+          <span class="form-toggle-icon">&#128075;</span> Du
+        </button>
+        <button type="button" class="form-toggle-btn" data-form="sie">
+          <span class="form-toggle-icon">&#127979;</span> Sie
+        </button>
       </div>
+
+      <div class="form-fields" id="form-fields-du">
+        <div class="input-group">
+          <input type="text" id="name-input" placeholder="Vorname eingeben&hellip;"
+                 onkeydown="if(event.key==='Enter')generateLink()">
+          <button class="btn-generate" onclick="generateLink()">Erstellen</button>
+        </div>
+      </div>
+
+      <div class="form-fields" id="form-fields-sie" style="display:none;">
+        <div class="input-group input-group-sie">
+          <select id="anrede-input" class="anrede-select">
+            <option value="Herr">Herr</option>
+            <option value="Frau">Frau</option>
+          </select>
+          <input type="text" id="nachname-input" placeholder="Nachname&hellip;"
+                 onkeydown="if(event.key==='Enter')generateLink()">
+          <button class="btn-generate" onclick="generateLink()">Erstellen</button>
+        </div>
+      </div>
+
       <div class="link-output" id="link-output"></div>
       <button class="btn-copy" id="btn-copy" onclick="copyLink()">Link kopieren</button>
     </div>

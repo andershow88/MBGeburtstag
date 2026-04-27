@@ -1,18 +1,64 @@
 (function () {
   var params = new URLSearchParams(window.location.search);
+  var form = params.get("form") === "sie" ? "sie" : "du";
   var rawName = params.get("name");
+  var rawAnrede = params.get("anrede");
   var name = rawName ? decodeURIComponent(rawName) : null;
-  var displayName = name || "du wundervoller Mensch";
+  var anrede = rawAnrede === "Frau" ? "Frau" : "Herr";
 
   document.addEventListener("DOMContentLoaded", function () {
-    document.getElementById("bday-name").textContent = displayName;
-    document.title = name
-      ? "Alles Gute, " + name + "!"
-      : "Alles Gute zum Geburtstag!";
+    if (form === "sie" && name) {
+      // Sie-Form
+      document.getElementById("bday-name").textContent = anrede + " " + name;
+      var subtitleEl = document.querySelector(".birthday-subtitle");
+      if (subtitleEl) {
+        subtitleEl.innerHTML =
+          "Heute ist Ihr Tag! Ich wünsche Ihnen von ganzem Herzen " +
+          "viel Gesundheit, Erfolg und Freude am Leben – " +
+          "der Rest kommt dann eh! Lassen Sie sich feiern!";
+      }
+      var greetingEl = document.querySelector(".birthday-greeting");
+      if (greetingEl) {
+        greetingEl.innerHTML = "Schöne Grüße,<br>Anderson Büttenbender";
+      }
+      document.title = "Alles Gute, " + anrede + " " + name + "!";
+    } else {
+      // Du-Form (Default)
+      var displayName = name || "du wundervoller Mensch";
+      document.getElementById("bday-name").textContent = displayName;
+      document.title = name
+        ? "Alles Gute, " + name + "!"
+        : "Alles Gute zum Geburtstag!";
+    }
 
     initParticles();
     runIntroSequence();
+    initFormToggle();
   });
+
+  function initFormToggle() {
+    var btns = document.querySelectorAll(".form-toggle-btn");
+    btns.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var f = btn.dataset.form;
+        btns.forEach(function (b) { b.classList.toggle("active", b === btn); });
+        document.getElementById("form-fields-du").style.display = (f === "du") ? "" : "none";
+        document.getElementById("form-fields-sie").style.display = (f === "sie") ? "" : "none";
+        // Output zurücksetzen, weil ein vorher generierter Link nicht mehr passt
+        var output = document.getElementById("link-output");
+        if (output) { output.textContent = ""; output.classList.remove("visible"); }
+        var copyBtn = document.getElementById("btn-copy");
+        if (copyBtn) copyBtn.classList.remove("visible");
+        // Fokus aufs erste Eingabefeld der aktiven Form
+        setTimeout(function () {
+          var firstInput = document.querySelector(
+            (f === "sie" ? "#form-fields-sie" : "#form-fields-du") + " input[type=text]"
+          );
+          if (firstInput) firstInput.focus();
+        }, 50);
+      });
+    });
+  }
 
   // --- Intro: Cake + Beer crack open ---
   function runIntroSequence() {
@@ -212,14 +258,27 @@
 
   // --- Link generator ---
   window.generateLink = function () {
-    var input = document.getElementById("name-input");
-    var val = input.value.trim();
-    if (!val) {
-      input.focus();
-      return;
-    }
+    var activeBtn = document.querySelector(".form-toggle-btn.active");
+    var activeForm = activeBtn ? activeBtn.dataset.form : "du";
     var base = window.location.origin + window.location.pathname;
-    var link = base + "?name=" + encodeURIComponent(val);
+    var link;
+
+    if (activeForm === "sie") {
+      var anredeVal = document.getElementById("anrede-input").value || "Herr";
+      var nachnameInput = document.getElementById("nachname-input");
+      var nachname = nachnameInput.value.trim();
+      if (!nachname) { nachnameInput.focus(); return; }
+      link = base
+        + "?form=sie"
+        + "&anrede=" + encodeURIComponent(anredeVal)
+        + "&name=" + encodeURIComponent(nachname);
+    } else {
+      var input = document.getElementById("name-input");
+      var val = input.value.trim();
+      if (!val) { input.focus(); return; }
+      link = base + "?name=" + encodeURIComponent(val);
+    }
+
     var output = document.getElementById("link-output");
     output.textContent = link;
     output.classList.add("visible");
