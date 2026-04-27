@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alles Gute zum Geburtstag!</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="style.css?v=6">
+  <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 
@@ -92,7 +92,6 @@
         <div class="input-group">
           <input type="text" id="name-input" placeholder="Vorname eingeben&hellip;"
                  onkeydown="if(event.key==='Enter')generateLink()">
-          <button class="btn-generate" onclick="generateLink()">Erstellen</button>
         </div>
       </div>
 
@@ -104,9 +103,25 @@
           </select>
           <input type="text" id="nachname-input" placeholder="Nachname&hellip;"
                  onkeydown="if(event.key==='Enter')generateLink()">
-          <button class="btn-generate" onclick="generateLink()">Erstellen</button>
         </div>
       </div>
+
+      <div class="text-edit-block">
+        <div class="text-edit-header">
+          <label for="text-input"><span class="text-edit-icon">&#128221;</span> Gl&uuml;ckwunschtext</label>
+          <button type="button" class="text-reset-btn" id="text-reset-btn" onclick="resetTextToDefault()" title="Auf Standardtext zur&uuml;cksetzen">
+            <span>&#8634;</span> Standard
+          </button>
+        </div>
+        <textarea id="text-input" class="text-input" rows="5" maxlength="600" placeholder="Dein Gl&uuml;ckwunschtext &hellip;"></textarea>
+        <div class="text-hint">
+          So sieht der Empf&auml;nger den Text. Du kannst ihn frei anpassen.
+        </div>
+      </div>
+
+      <button type="button" class="btn-generate btn-generate-full" onclick="generateLink()">
+        &#127881; Gl&uuml;ckwunsch-Link erstellen
+      </button>
 
       <div class="link-output" id="link-output"></div>
       <button class="btn-copy" id="btn-copy" onclick="copyLink()">Link kopieren</button>
@@ -129,6 +144,6 @@
     <img src="merkur-logo.svg" alt="Merkur Privatbank">
   </footer>
 
-  <script src="script.js?v=6"></script>
+  <script src="script.js?v=7"></script>
 </body>
 </html>

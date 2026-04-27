@@ -6,6 +6,20 @@
   var name = rawName ? decodeURIComponent(rawName) : null;
   var anrede = rawAnrede === "Frau" ? "Frau" : "Herr";
   var late = params.get("late") === "1";
+  var rawCustomText = params.get("text");
+  var customText = rawCustomText ? decodeURIComponent(rawCustomText) : null;
+  var userEditedText = false;
+
+  function escapeHtml(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+  function renderSafeText(s) {
+    return escapeHtml(s).replace(/\n/g, "<br>");
+  }
 
   // Textbausteine je Form (Du/Sie) und Variante (normal/late)
   var TEXTS = {
@@ -84,12 +98,51 @@
 
     if (prefixEl) prefixEl.textContent = cfg.titlePrefix[lateKey];
     if (nameEl) nameEl.textContent = displayName;
-    if (subtitleEl) subtitleEl.innerHTML = cfg.subtitle[lateKey];
+    if (subtitleEl) {
+      var rawSubtitle = (customText && customText.trim()) ? customText : cfg.subtitle[lateKey];
+      subtitleEl.innerHTML = renderSafeText(rawSubtitle);
+    }
     if (greetingEl) greetingEl.innerHTML = cfg.greeting;
 
     document.title = name
       ? cfg.titlePrefix[lateKey] + " " + displayName + "!"
       : "Geburtstagslink erstellen";
+  }
+
+  // Hilfsfunktionen für die Live-Vorschau im Modal
+  function getActiveForm() {
+    var btn = document.querySelector(".form-toggle-btn.active");
+    return btn && btn.dataset.form === "sie" ? "sie" : "du";
+  }
+  function isLateChecked() {
+    var cb = document.getElementById("late-input");
+    return !!(cb && cb.checked);
+  }
+  function getCurrentDefaultText() {
+    var formKey = getActiveForm();
+    var lateKey = isLateChecked() ? "late" : "normal";
+    return TEXTS[formKey].subtitle[lateKey];
+  }
+  function updateDefaultTextIfFresh() {
+    var ta = document.getElementById("text-input");
+    if (!ta || userEditedText) return;
+    ta.value = getCurrentDefaultText();
+  }
+  window.resetTextToDefault = function () {
+    var ta = document.getElementById("text-input");
+    if (!ta) return;
+    ta.value = getCurrentDefaultText();
+    userEditedText = false;
+    resetLinkOutput();
+  };
+  function initTextEdit() {
+    var ta = document.getElementById("text-input");
+    if (!ta) return;
+    ta.value = getCurrentDefaultText();
+    ta.addEventListener("input", function () {
+      userEditedText = (ta.value.trim() !== getCurrentDefaultText().trim());
+      resetLinkOutput();
+    });
   }
 
   document.addEventListener("DOMContentLoaded", function () {
@@ -104,6 +157,7 @@
     }
 
     initFormToggle();
+    initTextEdit();
   });
 
   function resetLinkOutput() {
@@ -122,12 +176,15 @@
         document.getElementById("form-fields-du").style.display = (f === "du") ? "" : "none";
         document.getElementById("form-fields-sie").style.display = (f === "sie") ? "" : "none";
         resetLinkOutput();
+        updateDefaultTextIfFresh();
       });
     });
 
-    // Late-Checkbox: Output-Reset, damit kein veralteter Link stehen bleibt
     var lateCb = document.getElementById("late-input");
-    if (lateCb) lateCb.addEventListener("change", resetLinkOutput);
+    if (lateCb) lateCb.addEventListener("change", function () {
+      resetLinkOutput();
+      updateDefaultTextIfFresh();
+    });
   }
 
   // --- Intro: Cake + Beer crack open ---
@@ -328,12 +385,19 @@
 
   // --- Link generator ---
   window.generateLink = function () {
-    var activeBtn = document.querySelector(".form-toggle-btn.active");
-    var activeForm = activeBtn ? activeBtn.dataset.form : "du";
-    var lateChecked = !!document.getElementById("late-input")?.checked;
+    var activeForm = getActiveForm();
+    var lateChecked = isLateChecked();
     var lateParam = lateChecked ? "&late=1" : "";
     var base = window.location.origin + window.location.pathname;
     var link;
+
+    // Custom-Text nur als Parameter anhängen, wenn vom Standard abweichend
+    var ta = document.getElementById("text-input");
+    var customVal = ta ? ta.value.trim() : "";
+    var defaultVal = getCurrentDefaultText().trim();
+    var textParam = (customVal && customVal !== defaultVal)
+      ? "&text=" + encodeURIComponent(customVal)
+      : "";
 
     if (activeForm === "sie") {
       var anredeVal = document.getElementById("anrede-input").value || "Herr";
@@ -344,12 +408,12 @@
         + "?form=sie"
         + "&anrede=" + encodeURIComponent(anredeVal)
         + "&name=" + encodeURIComponent(nachname)
-        + lateParam;
+        + lateParam + textParam;
     } else {
       var input = document.getElementById("name-input");
       var val = input.value.trim();
       if (!val) { input.focus(); return; }
-      link = base + "?name=" + encodeURIComponent(val) + lateParam;
+      link = base + "?name=" + encodeURIComponent(val) + lateParam + textParam;
     }
 
     var output = document.getElementById("link-output");
