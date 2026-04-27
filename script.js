@@ -77,13 +77,6 @@
         if (output) { output.textContent = ""; output.classList.remove("visible"); }
         var copyBtn = document.getElementById("btn-copy");
         if (copyBtn) copyBtn.classList.remove("visible");
-        // Fokus aufs erste Eingabefeld der aktiven Form
-        setTimeout(function () {
-          var firstInput = document.querySelector(
-            (f === "sie" ? "#form-fields-sie" : "#form-fields-du") + " input[type=text]"
-          );
-          if (firstInput) firstInput.focus();
-        }, 50);
       });
     });
   }

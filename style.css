@@ -569,9 +569,10 @@ body {
   z-index: 3000;
   background: linear-gradient(135deg, var(--bg-start), var(--bg-end), #1a1230, #0d1525);
   display: flex;
-  align-items: center;
+  /* flex-start statt center, sonst springt die Karte hoch sobald der Link-Output sie wachsen lässt */
+  align-items: flex-start;
   justify-content: center;
-  padding: 24px;
+  padding: clamp(24px, 6vh, 80px) 24px 60px;
   overflow-y: auto;
   animation: modalBgFade 0.4s ease;
 }
