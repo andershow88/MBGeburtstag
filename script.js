@@ -5,6 +5,41 @@
   var rawAnrede = params.get("anrede");
   var name = rawName ? decodeURIComponent(rawName) : null;
   var anrede = rawAnrede === "Frau" ? "Frau" : "Herr";
+  var late = params.get("late") === "1";
+
+  // Textbausteine je Form (Du/Sie) und Variante (normal/late)
+  var TEXTS = {
+    du: {
+      titlePrefix: { normal: "Alles Gute zum Geburtstag,", late: "Alles Gute nachträglich," },
+      subtitle: {
+        normal:
+          "Heute ist dein Tag! Ich wünsche dir von ganzem Herzen " +
+          "viel Gesundheit, Erfolg und Freude am Leben – " +
+          "der Rest kommt dann eh! Lass dich feiern!",
+        late:
+          "Auch wenn dein großer Tag schon ein paar Tage her ist — " +
+          "meine Glückwünsche kommen von Herzen, nur etwas später! " +
+          "Ich wünsche dir viel Gesundheit, Erfolg und Freude am Leben. " +
+          "Lass dich nachfeiern!"
+      },
+      greeting: "Liebe Grüße,<br>Anderson"
+    },
+    sie: {
+      titlePrefix: { normal: "Alles Gute zum Geburtstag,", late: "Alles Gute nachträglich," },
+      subtitle: {
+        normal:
+          "Heute ist Ihr Tag! Ich wünsche Ihnen von ganzem Herzen " +
+          "viel Gesundheit, Erfolg und Freude am Leben – " +
+          "der Rest kommt dann eh! Lassen Sie sich feiern!",
+        late:
+          "Auch wenn Ihr großer Tag schon ein paar Tage her ist — " +
+          "meine Glückwünsche kommen von Herzen, nur etwas später! " +
+          "Ich wünsche Ihnen viel Gesundheit, Erfolg und Freude am Leben. " +
+          "Lassen Sie sich nachfeiern!"
+      },
+      greeting: "Schöne Grüße,<br>Anderson Büttenbender"
+    }
+  };
 
   var birthdayStarted = false;
   function startBirthdayView() {
@@ -30,32 +65,39 @@
     modal.classList.remove("hidden");
   };
 
+  function applyBirthdayContent() {
+    var formKey = (form === "sie") ? "sie" : "du";
+    var lateKey = late ? "late" : "normal";
+    var cfg = TEXTS[formKey];
+
+    var displayName;
+    if (name) {
+      displayName = (formKey === "sie") ? (anrede + " " + name) : name;
+    } else {
+      displayName = "du wundervoller Mensch";
+    }
+
+    var prefixEl = document.getElementById("bday-prefix");
+    var nameEl = document.getElementById("bday-name");
+    var subtitleEl = document.querySelector(".birthday-subtitle");
+    var greetingEl = document.querySelector(".birthday-greeting");
+
+    if (prefixEl) prefixEl.textContent = cfg.titlePrefix[lateKey];
+    if (nameEl) nameEl.textContent = displayName;
+    if (subtitleEl) subtitleEl.innerHTML = cfg.subtitle[lateKey];
+    if (greetingEl) greetingEl.innerHTML = cfg.greeting;
+
+    document.title = name
+      ? cfg.titlePrefix[lateKey] + " " + displayName + "!"
+      : "Geburtstagslink erstellen";
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
-    if (form === "sie" && name) {
-      // Sie-Form
-      document.getElementById("bday-name").textContent = anrede + " " + name;
-      var subtitleEl = document.querySelector(".birthday-subtitle");
-      if (subtitleEl) {
-        subtitleEl.innerHTML =
-          "Heute ist Ihr Tag! Ich wünsche Ihnen von ganzem Herzen " +
-          "viel Gesundheit, Erfolg und Freude am Leben – " +
-          "der Rest kommt dann eh! Lassen Sie sich feiern!";
-      }
-      var greetingEl = document.querySelector(".birthday-greeting");
-      if (greetingEl) {
-        greetingEl.innerHTML = "Schöne Grüße,<br>Anderson Büttenbender";
-      }
-      document.title = "Alles Gute, " + anrede + " " + name + "!";
-      startBirthdayView();
-    } else if (name) {
-      // Du-Form mit Namen
-      document.getElementById("bday-name").textContent = name;
-      document.title = "Alles Gute, " + name + "!";
+    applyBirthdayContent();
+
+    if (name) {
       startBirthdayView();
     } else {
-      // Kein Name in der URL → Modal als erste Ansicht zeigen
-      document.getElementById("bday-name").textContent = "du wundervoller Mensch";
-      document.title = "Geburtstagslink erstellen";
       document.body.classList.add("modal-active");
       var modal = document.getElementById("generator-modal");
       if (modal) modal.classList.remove("hidden");
@@ -63,6 +105,13 @@
 
     initFormToggle();
   });
+
+  function resetLinkOutput() {
+    var output = document.getElementById("link-output");
+    if (output) { output.textContent = ""; output.classList.remove("visible"); }
+    var copyBtn = document.getElementById("btn-copy");
+    if (copyBtn) copyBtn.classList.remove("visible");
+  }
 
   function initFormToggle() {
     var btns = document.querySelectorAll(".form-toggle-btn");
@@ -72,13 +121,13 @@
         btns.forEach(function (b) { b.classList.toggle("active", b === btn); });
         document.getElementById("form-fields-du").style.display = (f === "du") ? "" : "none";
         document.getElementById("form-fields-sie").style.display = (f === "sie") ? "" : "none";
-        // Output zurücksetzen, weil ein vorher generierter Link nicht mehr passt
-        var output = document.getElementById("link-output");
-        if (output) { output.textContent = ""; output.classList.remove("visible"); }
-        var copyBtn = document.getElementById("btn-copy");
-        if (copyBtn) copyBtn.classList.remove("visible");
+        resetLinkOutput();
       });
     });
+
+    // Late-Checkbox: Output-Reset, damit kein veralteter Link stehen bleibt
+    var lateCb = document.getElementById("late-input");
+    if (lateCb) lateCb.addEventListener("change", resetLinkOutput);
   }
 
   // --- Intro: Cake + Beer crack open ---
@@ -281,6 +330,8 @@
   window.generateLink = function () {
     var activeBtn = document.querySelector(".form-toggle-btn.active");
     var activeForm = activeBtn ? activeBtn.dataset.form : "du";
+    var lateChecked = !!document.getElementById("late-input")?.checked;
+    var lateParam = lateChecked ? "&late=1" : "";
     var base = window.location.origin + window.location.pathname;
     var link;
 
@@ -292,12 +343,13 @@
       link = base
         + "?form=sie"
         + "&anrede=" + encodeURIComponent(anredeVal)
-        + "&name=" + encodeURIComponent(nachname);
+        + "&name=" + encodeURIComponent(nachname)
+        + lateParam;
     } else {
       var input = document.getElementById("name-input");
       var val = input.value.trim();
       if (!val) { input.focus(); return; }
-      link = base + "?name=" + encodeURIComponent(val);
+      link = base + "?name=" + encodeURIComponent(val) + lateParam;
     }
 
     var output = document.getElementById("link-output");

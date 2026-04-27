@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alles Gute zum Geburtstag!</title>
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 
@@ -45,7 +45,7 @@
     <div class="birthday-card">
       <div class="cake-emoji">&#127874;</div>
       <h1 class="birthday-title">
-        Alles Gute zum Geburtstag,
+        <span id="bday-prefix">Alles Gute zum Geburtstag,</span>
         <span class="name" id="bday-name"></span>!
       </h1>
       <p class="birthday-subtitle">
@@ -80,6 +80,13 @@
           <span class="form-toggle-icon">&#127979;</span> Sie
         </button>
       </div>
+
+      <label class="late-checkbox">
+        <input type="checkbox" id="late-input">
+        <span class="late-icon">&#128338;</span>
+        <span class="late-label">Nachtr&auml;glich gratulieren</span>
+        <span class="late-hint">Text wird angepasst</span>
+      </label>
 
       <div class="form-fields" id="form-fields-du">
         <div class="input-group">
@@ -122,6 +129,6 @@
     <img src="merkur-logo.svg" alt="Merkur Privatbank">
   </footer>
 
-  <script src="script.js?v=5"></script>
+  <script src="script.js?v=6"></script>
 </body>
 </html>

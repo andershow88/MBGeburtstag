@@ -703,6 +703,49 @@ body.modal-active { overflow: hidden; }
 }
 .form-toggle-icon { font-size: 1rem; }
 
+/* Nachträglich-Checkbox */
+.late-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  margin-bottom: 14px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.75);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.late-checkbox:hover {
+  border-color: rgba(197, 164, 109, 0.35);
+  background: rgba(197, 164, 109, 0.05);
+  color: var(--accent-light);
+}
+.late-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+  margin: 0;
+  flex-shrink: 0;
+}
+.late-icon { font-size: 1.05rem; }
+.late-label { flex: 1; font-weight: 500; }
+.late-hint {
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+.late-checkbox:has(input:checked) {
+  background: rgba(197, 164, 109, 0.1);
+  border-color: rgba(197, 164, 109, 0.5);
+  color: var(--accent);
+}
+.late-checkbox:has(input:checked) .late-hint { color: rgba(197, 164, 109, 0.7); }
+
 .form-fields { animation: formFadeIn 0.25s ease; }
 @keyframes formFadeIn {
   from { opacity: 0; transform: translateY(-4px); }
