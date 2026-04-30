@@ -109,13 +109,64 @@
       <div class="text-edit-block">
         <div class="text-edit-header">
           <label for="text-input"><span class="text-edit-icon">&#128221;</span> Gl&uuml;ckwunschtext</label>
-          <button type="button" class="text-reset-btn" id="text-reset-btn" onclick="resetTextToDefault()" title="Auf Standardtext zur&uuml;cksetzen">
-            <span>&#8634;</span> Standard
-          </button>
+          <div style="display:flex; gap:.4rem;">
+            <button type="button" class="text-reset-btn" id="text-ki-btn" onclick="kiGenerieren()" title="Glückwunschtext mit KI erzeugen">
+              <span>&#10024;</span> Mit KI
+            </button>
+            <button type="button" class="text-reset-btn" id="text-reset-btn" onclick="resetTextToDefault()" title="Auf Standardtext zur&uuml;cksetzen">
+              <span>&#8634;</span> Standard
+            </button>
+          </div>
         </div>
-        <textarea id="text-input" class="text-input" rows="5" maxlength="600" placeholder="Dein Gl&uuml;ckwunschtext &hellip;"></textarea>
-        <div class="text-hint">
-          So sieht der Empf&auml;nger den Text. Du kannst ihn frei anpassen.
+        <textarea id="text-input" class="text-input" rows="5" maxlength="400" placeholder="Dein Gl&uuml;ckwunschtext (max. 400 Zeichen)&hellip;"></textarea>
+        <div class="text-hint" id="text-hint">
+          So sieht der Empf&auml;nger den Text. Du kannst ihn frei anpassen. <span id="text-zeichen" style="float:right; opacity:.7;">0/400</span>
+        </div>
+      </div>
+
+      <!-- KI-Dialog -->
+      <div id="ki-modal" class="generator-modal hidden" style="z-index:10001;">
+        <div class="generator-modal-card" style="max-width:520px;">
+          <div class="generator-modal-header">
+            <span class="generator-modal-emoji">&#10024;</span>
+            <h1 class="generator-modal-title">Glückwunsch mit KI erstellen</h1>
+            <p class="generator-modal-subtitle">
+              Gib 3&ndash;5 Stichw&ouml;rter ein, die in den Wunsch einflie&szlig;en sollen
+              (z.&nbsp;B. Hobbys, Eigenschaften, Ereignisse). Die KI macht daraus
+              einen pers&ouml;nlichen Glückwunsch (max. 400 Zeichen).
+            </p>
+          </div>
+
+          <div id="ki-key-block" class="text-edit-block" style="display:none;">
+            <div class="text-edit-header">
+              <label for="ki-key-input"><span class="text-edit-icon">&#128273;</span> OpenAI API-Key</label>
+            </div>
+            <input type="password" id="ki-key-input" class="text-input" autocomplete="off"
+                   placeholder="sk-&hellip;" style="font-family:monospace;">
+            <div class="text-hint">
+              Wird nur in deinem Browser gespeichert (LocalStorage), nicht im Link
+              mitgegeben und nicht an Empf&auml;nger weitergegeben.
+            </div>
+          </div>
+
+          <div class="text-edit-block">
+            <div class="text-edit-header">
+              <label for="ki-stichworte"><span class="text-edit-icon">&#128221;</span> Stichw&ouml;rter</label>
+            </div>
+            <input type="text" id="ki-stichworte" class="text-input"
+                   placeholder="z.&nbsp;B. Tennis, Familie, neuer Job, Reise, Humor"
+                   onkeydown="if(event.key==='Enter')kiGenerierenStart()">
+            <div class="text-hint">Komma-separiert &ndash; muss kein voller Satz sein.</div>
+          </div>
+
+          <div id="ki-status" style="font-size:.85rem; color:var(--mc-text-muted); min-height:1.4em; margin:.5rem 0;"></div>
+
+          <div style="display:flex; gap:.5rem; justify-content:flex-end;">
+            <button type="button" class="btn-preview" onclick="closeKiModal()">Abbrechen</button>
+            <button type="button" class="btn-generate" id="ki-go-btn" onclick="kiGenerierenStart()">
+              &#10024; Generieren
+            </button>
+          </div>
         </div>
       </div>
 

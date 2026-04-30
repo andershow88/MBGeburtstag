@@ -148,17 +148,149 @@
     if (!ta) return;
     ta.value = getCurrentDefaultText();
     userEditedText = false;
+    aktualisiereZeichenzaehler();
     resetLinkOutput();
   };
   function initTextEdit() {
     var ta = document.getElementById("text-input");
     if (!ta) return;
     ta.value = getCurrentDefaultText();
+    aktualisiereZeichenzaehler();
     ta.addEventListener("input", function () {
       userEditedText = (ta.value.trim() !== getCurrentDefaultText().trim());
       resetLinkOutput();
+      aktualisiereZeichenzaehler();
     });
   }
+
+  function aktualisiereZeichenzaehler() {
+    var ta = document.getElementById("text-input");
+    var z = document.getElementById("text-zeichen");
+    if (ta && z) z.textContent = ta.value.length + "/400";
+  }
+
+  // ── KI-Glückwunsch ──────────────────────────────────────────────
+  window.kiGenerieren = function () {
+    var modal = document.getElementById("ki-modal");
+    if (!modal) return;
+    var keyBlock = document.getElementById("ki-key-block");
+    var savedKey = (localStorage.getItem("openai_key") || "").trim();
+    if (!savedKey) {
+      keyBlock.style.display = "";
+    } else {
+      keyBlock.style.display = "none";
+    }
+    document.getElementById("ki-status").textContent = "";
+    document.getElementById("ki-stichworte").value = "";
+    modal.classList.remove("hidden");
+    setTimeout(function () { document.getElementById("ki-stichworte").focus(); }, 50);
+  };
+
+  window.closeKiModal = function () {
+    var modal = document.getElementById("ki-modal");
+    if (modal) modal.classList.add("hidden");
+  };
+
+  window.kiGenerierenStart = async function () {
+    var stichEl = document.getElementById("ki-stichworte");
+    var keyEl = document.getElementById("ki-key-input");
+    var statusEl = document.getElementById("ki-status");
+    var goBtn = document.getElementById("ki-go-btn");
+
+    var stichwoerter = stichEl.value.trim();
+    if (!stichwoerter) {
+      statusEl.textContent = "Bitte mindestens ein paar Stichwörter eingeben.";
+      stichEl.focus();
+      return;
+    }
+
+    var apiKey = (localStorage.getItem("openai_key") || "").trim();
+    if (!apiKey) {
+      apiKey = (keyEl.value || "").trim();
+      if (!apiKey || !apiKey.startsWith("sk-")) {
+        statusEl.textContent = "Bitte gültigen OpenAI API-Key (beginnt mit sk-) eingeben.";
+        keyEl.focus();
+        return;
+      }
+      localStorage.setItem("openai_key", apiKey);
+    }
+
+    var formKey = getActiveForm();
+    var lateKey = isLateChecked() ? "late" : "normal";
+
+    var system =
+      "Du verfasst kurze, herzliche deutsche Geburtstagswünsche. " +
+      "Schreibe direkt den Wunsch — keine Anrede ('Lieber X'), keine " +
+      "Grußformel oder Signatur am Ende (das wird separat angezeigt). " +
+      "Maximal 400 Zeichen. Ein bis zwei Sätze, persönlich, freundlich, " +
+      "ohne Klischees. Keine Emojis.";
+
+    var anrede = formKey === "sie" ? "Sie-Form (höflich-distanziert)" : "Du-Form (locker-vertraut)";
+    var nachtraeglich = lateKey === "late"
+      ? "Es ist eine NACHTRÄGLICHE Gratulation — gehe kurz darauf ein."
+      : "Es ist eine pünktliche Geburtstags-Gratulation am Tag selbst.";
+
+    var user =
+      "Schreibe einen Geburtstagswunsch in der " + anrede + ".\n" +
+      nachtraeglich + "\n" +
+      "Beziehe diese Stichwörter / Hinweise des Gratulanten mit ein:\n" +
+      stichwoerter + "\n\n" +
+      "Wichtig: maximal 400 Zeichen, keine Anrede, keine Signatur, keine Emojis.";
+
+    goBtn.disabled = true;
+    goBtn.textContent = "Generiere…";
+    statusEl.textContent = "Frage OpenAI an…";
+
+    try {
+      var resp = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + apiKey,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "gpt-4o-mini",
+          temperature: 0.8,
+          max_tokens: 400,
+          messages: [
+            { role: "system", content: system },
+            { role: "user", content: user }
+          ]
+        })
+      });
+
+      if (!resp.ok) {
+        var errBody = await resp.text();
+        if (resp.status === 401) {
+          localStorage.removeItem("openai_key");
+          statusEl.textContent = "API-Key ungültig oder abgelaufen. Bitte neu eingeben.";
+          document.getElementById("ki-key-block").style.display = "";
+          return;
+        }
+        statusEl.textContent = "Fehler von OpenAI (" + resp.status + ").";
+        console.error(errBody);
+        return;
+      }
+
+      var data = await resp.json();
+      var antwort = (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) || "";
+      antwort = antwort.trim();
+      // Hardcap 400 Zeichen, falls die KI doch ueber das Limit geht
+      if (antwort.length > 400) antwort = antwort.substring(0, 400).trimEnd();
+
+      var ta = document.getElementById("text-input");
+      ta.value = antwort;
+      userEditedText = true;
+      aktualisiereZeichenzaehler();
+      resetLinkOutput();
+      closeKiModal();
+    } catch (e) {
+      statusEl.textContent = "Verbindungsfehler: " + (e && e.message ? e.message : e);
+    } finally {
+      goBtn.disabled = false;
+      goBtn.innerHTML = "&#10024; Generieren";
+    }
+  };
 
   document.addEventListener("DOMContentLoaded", function () {
     applyBirthdayContent();
