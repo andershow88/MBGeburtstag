@@ -170,16 +170,21 @@
   }
 
   // ── KI-Glückwunsch ──────────────────────────────────────────────
+  function holeApiKey() {
+    // Bevorzugt: globale Variable aus config.js (auf Server hinterlegt)
+    if (typeof window.MB_OPENAI_KEY === "string" && window.MB_OPENAI_KEY.trim().startsWith("sk-")) {
+      return window.MB_OPENAI_KEY.trim();
+    }
+    // Fallback: LocalStorage (User-Eingabe)
+    return (localStorage.getItem("openai_key") || "").trim();
+  }
+
   window.kiGenerieren = function () {
     var modal = document.getElementById("ki-modal");
     if (!modal) return;
     var keyBlock = document.getElementById("ki-key-block");
-    var savedKey = (localStorage.getItem("openai_key") || "").trim();
-    if (!savedKey) {
-      keyBlock.style.display = "";
-    } else {
-      keyBlock.style.display = "none";
-    }
+    // Eingabefeld nur zeigen, wenn weder config.js noch LocalStorage einen Key liefern
+    keyBlock.style.display = holeApiKey() ? "none" : "";
     document.getElementById("ki-status").textContent = "";
     document.getElementById("ki-stichworte").value = "";
     modal.classList.remove("hidden");
@@ -204,7 +209,7 @@
       return;
     }
 
-    var apiKey = (localStorage.getItem("openai_key") || "").trim();
+    var apiKey = holeApiKey();
     if (!apiKey) {
       apiKey = (keyEl.value || "").trim();
       if (!apiKey || !apiKey.startsWith("sk-")) {
@@ -262,9 +267,16 @@
       if (!resp.ok) {
         var errBody = await resp.text();
         if (resp.status === 401) {
+          // 401: nur den im LocalStorage gespeicherten Key löschen — den global
+          // hinterlegten (window.MB_OPENAI_KEY in config.js) kann der Browser
+          // nicht ändern, das muss der Server-Admin machen.
           localStorage.removeItem("openai_key");
-          statusEl.textContent = "API-Key ungültig oder abgelaufen. Bitte neu eingeben.";
-          document.getElementById("ki-key-block").style.display = "";
+          if (typeof window.MB_OPENAI_KEY === "string" && window.MB_OPENAI_KEY.trim()) {
+            statusEl.textContent = "API-Key ungültig (HTTP 401). Bitte den Key in config.js auf dem Server prüfen.";
+          } else {
+            statusEl.textContent = "API-Key ungültig oder abgelaufen. Bitte neu eingeben.";
+            document.getElementById("ki-key-block").style.display = "";
+          }
           return;
         }
         statusEl.textContent = "Fehler von OpenAI (" + resp.status + ").";

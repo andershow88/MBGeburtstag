@@ -1,0 +1,6 @@
+.DS_Store
+**/.DS_Store
+node_modules/
+
+# Lokale Konfiguration mit OpenAI-Key — NICHT einchecken
+config.js
