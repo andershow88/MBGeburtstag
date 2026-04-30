@@ -8,6 +8,10 @@
   var late = params.get("late") === "1";
   var rawCustomText = params.get("text");
   var customText = rawCustomText ? decodeURIComponent(rawCustomText) : null;
+  var rawGruss = params.get("gruss");
+  var gruss = rawGruss ? decodeURIComponent(rawGruss) : "";
+  var rawAbsender = params.get("absender");
+  var absender = rawAbsender ? decodeURIComponent(rawAbsender) : "";
   var userEditedText = false;
 
   function escapeHtml(s) {
@@ -22,6 +26,8 @@
   }
 
   // Textbausteine je Form (Du/Sie) und Variante (normal/late)
+  // Hinweis: Grußformel und Absender werden vom Ersteller im Generator-Modal eingegeben
+  // (URL-Parameter `gruss` und `absender`) — keine hardcoded Signatur mehr.
   var TEXTS = {
     du: {
       titlePrefix: { normal: "Alles Gute zum Geburtstag,", late: "Alles Gute nachträglich," },
@@ -35,8 +41,7 @@
           "meine Glückwünsche kommen von Herzen, nur etwas später! " +
           "Ich wünsche dir viel Gesundheit, Erfolg und Freude am Leben. " +
           "Lass dich nachfeiern!"
-      },
-      greeting: "Liebe Grüße,<br>Anderson"
+      }
     },
     sie: {
       titlePrefix: { normal: "Alles Gute zum Geburtstag,", late: "Alles Gute nachträglich," },
@@ -50,8 +55,7 @@
           "meine Glückwünsche kommen von Herzen, nur etwas später! " +
           "Ich wünsche Ihnen viel Gesundheit, Erfolg und Freude am Leben. " +
           "Lassen Sie sich nachfeiern!"
-      },
-      greeting: "Schöne Grüße,<br>Anderson Büttenbender"
+      }
     }
   };
 
@@ -100,7 +104,20 @@
       var rawSubtitle = (customText && customText.trim()) ? customText : cfg.subtitle[lateKey];
       subtitleEl.innerHTML = renderSafeText(rawSubtitle);
     }
-    if (greetingEl) greetingEl.innerHTML = cfg.greeting;
+    if (greetingEl) {
+      var grussTrim = (gruss || "").trim();
+      var absenderTrim = (absender || "").trim();
+      if (grussTrim || absenderTrim) {
+        var teile = [];
+        if (grussTrim) teile.push(escapeHtml(grussTrim) + (absenderTrim ? "," : ""));
+        if (absenderTrim) teile.push(escapeHtml(absenderTrim));
+        greetingEl.innerHTML = teile.join("<br>");
+        greetingEl.style.display = "";
+      } else {
+        greetingEl.innerHTML = "";
+        greetingEl.style.display = "none";
+      }
+    }
 
     document.title = name
       ? cfg.titlePrefix[lateKey] + " " + displayName + "!"
@@ -397,6 +414,14 @@
       ? "&text=" + encodeURIComponent(customVal)
       : "";
 
+    // Grußformel + Absender (optional)
+    var grussInp = document.getElementById("gruss-input");
+    var absInp = document.getElementById("absender-input");
+    var grussVal = grussInp ? grussInp.value.trim() : "";
+    var absenderVal = absInp ? absInp.value.trim() : "";
+    var grussParam = grussVal ? "&gruss=" + encodeURIComponent(grussVal) : "";
+    var absenderParam = absenderVal ? "&absender=" + encodeURIComponent(absenderVal) : "";
+
     if (activeForm === "sie") {
       var anredeVal = document.getElementById("anrede-input").value || "Herr";
       var nachnameInput = document.getElementById("nachname-input");
@@ -406,12 +431,13 @@
         + "?form=sie"
         + "&anrede=" + encodeURIComponent(anredeVal)
         + "&name=" + encodeURIComponent(nachname)
-        + lateParam + textParam;
+        + lateParam + textParam + grussParam + absenderParam;
     } else {
       var input = document.getElementById("name-input");
       var val = input.value.trim();
       if (!val) { input.focus(); return; }
-      link = base + "?name=" + encodeURIComponent(val) + lateParam + textParam;
+      link = base + "?name=" + encodeURIComponent(val)
+        + lateParam + textParam + grussParam + absenderParam;
     }
 
     var output = document.getElementById("link-output");

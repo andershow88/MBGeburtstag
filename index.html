@@ -53,7 +53,7 @@
         viel Gesundheit, Erfolg und Freude am Leben &ndash;
         der Rest kommt dann eh! Lass dich feiern!
       </p>
-      <p class="birthday-greeting">Liebe Gr&uuml;&szlig;e,<br>Anderson</p>
+      <p class="birthday-greeting" id="bday-greeting"></p>
       <button class="surprise-btn" onclick="startSurprise()">
         <span class="btn-shine"></span>
         &#127881; &Uuml;berraschung starten
@@ -116,6 +116,21 @@
         <textarea id="text-input" class="text-input" rows="5" maxlength="600" placeholder="Dein Gl&uuml;ckwunschtext &hellip;"></textarea>
         <div class="text-hint">
           So sieht der Empf&auml;nger den Text. Du kannst ihn frei anpassen.
+        </div>
+      </div>
+
+      <div class="text-edit-block">
+        <div class="text-edit-header">
+          <label><span class="text-edit-icon">&#9997;&#65039;</span> Gru&szlig;formel &amp; Absender</label>
+        </div>
+        <div class="input-group input-group-sie">
+          <input type="text" id="gruss-input" class="anrede-select" style="flex:0 0 42%;"
+                 placeholder="z.B. Liebe Gr&uuml;&szlig;e">
+          <input type="text" id="absender-input"
+                 placeholder="Dein Name (Absender)">
+        </div>
+        <div class="text-hint">
+          Beide Felder sind optional &ndash; wenn du sie ausf&uuml;llst, erscheinen sie unten auf der Karte. L&auml;sst du sie leer, wird gar keine Signatur angezeigt.
         </div>
       </div>
 
