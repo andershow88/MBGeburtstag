@@ -170,22 +170,23 @@
   }
 
   // ── KI-Glückwunsch ──────────────────────────────────────────────
+  // Key ausschliesslich aus window.MB_OPENAI_KEY (config.js auf dem Server).
   function holeApiKey() {
-    // Bevorzugt: globale Variable aus config.js (auf Server hinterlegt)
     if (typeof window.MB_OPENAI_KEY === "string" && window.MB_OPENAI_KEY.trim().startsWith("sk-")) {
       return window.MB_OPENAI_KEY.trim();
     }
-    // Fallback: LocalStorage (User-Eingabe)
-    return (localStorage.getItem("openai_key") || "").trim();
+    return "";
   }
 
   window.kiGenerieren = function () {
     var modal = document.getElementById("ki-modal");
     if (!modal) return;
-    var keyBlock = document.getElementById("ki-key-block");
-    // Eingabefeld nur zeigen, wenn weder config.js noch LocalStorage einen Key liefern
-    keyBlock.style.display = holeApiKey() ? "none" : "";
-    document.getElementById("ki-status").textContent = "";
+    var status = document.getElementById("ki-status");
+    if (!holeApiKey()) {
+      status.textContent = "OpenAI-Key fehlt — bitte in config.js auf dem Server hinterlegen.";
+    } else {
+      status.textContent = "";
+    }
     document.getElementById("ki-stichworte").value = "";
     modal.classList.remove("hidden");
     setTimeout(function () { document.getElementById("ki-stichworte").focus(); }, 50);
@@ -198,7 +199,6 @@
 
   window.kiGenerierenStart = async function () {
     var stichEl = document.getElementById("ki-stichworte");
-    var keyEl = document.getElementById("ki-key-input");
     var statusEl = document.getElementById("ki-status");
     var goBtn = document.getElementById("ki-go-btn");
 
@@ -211,13 +211,8 @@
 
     var apiKey = holeApiKey();
     if (!apiKey) {
-      apiKey = (keyEl.value || "").trim();
-      if (!apiKey || !apiKey.startsWith("sk-")) {
-        statusEl.textContent = "Bitte gültigen OpenAI API-Key (beginnt mit sk-) eingeben.";
-        keyEl.focus();
-        return;
-      }
-      localStorage.setItem("openai_key", apiKey);
+      statusEl.textContent = "OpenAI-Key fehlt — bitte in config.js auf dem Server hinterlegen.";
+      return;
     }
 
     var formKey = getActiveForm();
@@ -267,16 +262,7 @@
       if (!resp.ok) {
         var errBody = await resp.text();
         if (resp.status === 401) {
-          // 401: nur den im LocalStorage gespeicherten Key löschen — den global
-          // hinterlegten (window.MB_OPENAI_KEY in config.js) kann der Browser
-          // nicht ändern, das muss der Server-Admin machen.
-          localStorage.removeItem("openai_key");
-          if (typeof window.MB_OPENAI_KEY === "string" && window.MB_OPENAI_KEY.trim()) {
-            statusEl.textContent = "API-Key ungültig (HTTP 401). Bitte den Key in config.js auf dem Server prüfen.";
-          } else {
-            statusEl.textContent = "API-Key ungültig oder abgelaufen. Bitte neu eingeben.";
-            document.getElementById("ki-key-block").style.display = "";
-          }
+          statusEl.textContent = "API-Key ungültig (HTTP 401). Bitte den Key in config.js auf dem Server prüfen.";
           return;
         }
         statusEl.textContent = "Fehler von OpenAI (" + resp.status + ").";
